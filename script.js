@@ -1,85 +1,69 @@
 let isThai = false;
+const langBtn = document.getElementById('lang-btn');
+const correctFileText = document.getElementById('correct-file-text');
+const calculateBtn = document.getElementById('calculate-btn');
+const landingTitle = document.getElementById('landing-title');
 
-function handleLogin() {
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  if(!username || !password){
-    alert(isThai ? 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน' : 'Please fill username and password');
-    return;
-  }
-  alert(isThai ? `เข้าสู่ระบบ: ${username}` : `Login: ${username}`);
-}
-
-function togglePassword() {
-  const input = document.getElementById("password");
-  const eye = document.getElementById("eyeIcon");
-
-  if (input.type === "password") {
-    input.type = "text";
-    eye.innerHTML = `
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
-    `;
-  } else {
-    input.type = "password";
-    eye.innerHTML = `
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
-      <line x1="1" y1="1" x2="23" y2="23"/>
-    `;
-  }
-}
-
-function toggleLanguage() {
+langBtn.addEventListener('click', ()=>{
   isThai = !isThai;
-  if(isThai){
-    document.getElementById('login-title').textContent = 'เข้าสู่ระบบ';
-    document.getElementById('username').placeholder = 'กรอกชื่อผู้ใช้';
-    document.getElementById('password').placeholder = 'กรอกรหัสผ่าน';
-    document.getElementById('forgot-text').textContent = 'ลืมรหัสผ่าน?';
-    document.getElementById('login-btn').textContent = 'เข้าสู่ระบบ';
-  } else {
-    document.getElementById('login-title').textContent = 'LOG-IN';
-    document.getElementById('username').placeholder = 'Enter your name...';
-    document.getElementById('password').placeholder = 'Enter your password...';
-    document.getElementById('forgot-text').textContent = 'forgot your password';
-    document.getElementById('login-btn').textContent = 'LOG-IN';
-  }
-}
 
-// Nav buttons animation
-document.querySelectorAll('.nav-buttons button').forEach(button => {
-  button.addEventListener('click', () => {
-    button.style.transform = 'scale(0.95)';
-    setTimeout(() => button.style.transform = 'scale(1)', 150);
+  document.getElementById('desc-title').textContent = isThai ? "คำอธิบาย" : "Description";
+  correctFileText.textContent = isThai ? "ใส่ไฟล์คำตอบที่ถูกต้อง..." : "Put the correct answer file here...";
+  calculateBtn.textContent = isThai ? "คำนวณคำตอบ" : "Calculate the Answer";
+  landingTitle.textContent = isThai ? "หน้าแรก" : "Landing Page";
+
+  document.querySelectorAll('#desc-list li').forEach(li=>{
+    const span = li.querySelector('span.accuracy');
+    if(span){
+      if(span.classList.contains('high')) span.textContent = isThai ? "เขียว" : "Green";
+      else if(span.classList.contains('medium')) span.textContent = isThai ? "เหลือง" : "Yellow";
+      else if(span.classList.contains('low')) span.textContent = isThai ? "แดง" : "Red";
+      li.childNodes.forEach(node => { if(node.nodeType === 3) node.nodeValue = ""; });
+      li.lastChild.nodeValue = isThai ?
+        li.dataset.th.split(" ")[1] : li.dataset.en.split(" ")[1];
+    } else {
+      li.childNodes.forEach(node=>{ if(node.nodeType === 3) node.nodeValue = li.dataset[isThai?'th':'en']; });
+    }
   });
 });
 
-// Forgot password click animation
-document.getElementById('forgot-text').addEventListener('click', () => {
-  const f = document.getElementById('forgot-text');
-  f.style.transform = 'scale(0.95)';
-  setTimeout(() => f.style.transform = 'scale(1)', 150);
+// Template example
+const historyList = document.getElementById('history-list');
+const templateItem = document.querySelector('.file-item.template');
+const uploadedCount = document.getElementById('uploaded-count');
+
+const backendData = [
+  {name:"67090500001_Sawaddee Meechai_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+  {name:"67090500002_Tankwamdee Sresuk_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+  {name:"67090500003_Arsara Buach_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+  {name:"67090500004_Somchai_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+  {name:"67090500005_Jane_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+  {name:"67090500006_John_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+  {name:"67090500007_Mike_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+  {name:"67090500008_Sara_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+  {name:"67090500009_Alice_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+  {name:"67090500010_Bob_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+  {name:"67090500011_Extra_AI-Midterm-Exam.PDF", date:"2026-04-10"},
+];
+
+const maxFiles = 10;
+const filesToDisplay = backendData.slice(0, maxFiles);
+
+filesToDisplay.forEach(file=>{
+  const item = templateItem.cloneNode(true);
+  item.style.display="flex"; item.classList.remove('template');
+  item.querySelector('.file-name').textContent = file.name;
+  item.querySelector('.file-date').textContent = file.date;
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.file-item').forEach(i=>i.classList.remove('selected'));
+    item.classList.add('selected');
+  });
+  historyList.appendChild(item);
 });
 
-// Login button click animation
-document.getElementById('login-btn').addEventListener('click', () => {
-  const b = document.getElementById('login-btn');
-  b.style.transform = 'scale(0.97)';
-  setTimeout(() => b.style.transform = 'scale(1)', 150);
+uploadedCount.textContent = `${filesToDisplay.length}/${maxFiles} files`;
+
+// Calculate button
+document.querySelector('.calculate-btn').addEventListener('click', ()=>{
+  alert('Calculating answers...');
 });
-
-// Change profile from backend
-function changeProfile(src) {
-  const avatar = document.getElementById('profile-avatar');
-  const img = document.getElementById('profile-img');
-  const svg = document.querySelector('#profile-avatar .avatar-placeholder');
-
-  if(src) {
-    img.src = src;
-    avatar.classList.add('has-image');
-  } else {
-    img.src = '';
-    avatar.classList.remove('has-image');
-  }
-}
